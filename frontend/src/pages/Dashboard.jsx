@@ -47,12 +47,15 @@ function Dashboard() {
             <div className="sm:flex sm:justify-between sm:items-center mb-8">
 
               {/* Left: Avatars */}
-              <DashboardAvatars />
+              {/* <DashboardAvatars /> */}
+
+              {/* Requested */}
+              <p className='text-lg'>Requested</p>
 
               {/* Right: Actions */}
               <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
                 {/* Filter button */}
-                <FilterButton />
+                {/* <FilterButton /> */}
                 {/* Datepicker built with flatpickr */}
                 <Datepicker />
                 {/* Add view button */}
@@ -69,6 +72,12 @@ function Dashboard() {
             {/* Cards */}
             <div className="grid grid-cols-12 gap-6">
 
+              {/* Line chart (Acme Plus) */}
+              <DashboardCard01 />
+              {/* Line chart (Acme Plus) */}
+              <DashboardCard01 />
+              {/* Line chart (Acme Plus) */}
+              <DashboardCard01 />
               {/* Line chart (Acme Plus) */}
               <DashboardCard01 />
               {/* Line chart (Acme Advanced) */}

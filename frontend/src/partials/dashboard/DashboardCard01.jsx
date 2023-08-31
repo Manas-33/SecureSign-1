@@ -82,7 +82,7 @@ function DashboardCard01() {
           <EditMenu align="right" className="relative inline-flex">
             <li>
               <Link className="font-medium text-sm text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-200 flex py-1 px-3" to="#0">
-                Option 1
+                Option 
               </Link>
             </li>
             <li>
@@ -107,7 +107,7 @@ function DashboardCard01() {
       {/* Chart built with Chart.js 3 */}
       <div className="grow max-sm:max-h-[128px] xl:max-h-[128px]">
         {/* Change the height attribute to adjust the chart height */}
-        <LineChart data={chartData} width={389} height={128} />
+        {/* <LineChart data={chartData} width={389} height={128} /> */}
       </div>
     </div>
   );

@@ -213,8 +213,8 @@ function Navbar() {
                     
                     
                         <NavItem onClick={handleProductsClick} productsClick={productsClick}>
-                            <NavLinks to='/' onClick={closeMobileMenu}>
-                                Products
+                            <NavLinks to='/dashboard' onClick={closeMobileMenu}>
+                                Dashboard
                             </NavLinks>
                         </NavItem>
 

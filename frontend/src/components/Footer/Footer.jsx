@@ -193,7 +193,7 @@ function Footer() {
     <FooterContainer>
       <FooterSubscription>
         <FooterSubHeading>
-          Join our exclusive membership to receive the latest news and trends
+          Get Started with verification and signing your documents
         </FooterSubHeading>
         <FooterSubText>You can unsubscribe at any time.</FooterSubText>
         <Form>
@@ -240,9 +240,9 @@ function Footer() {
         <SocialMediaWrap>
           <SocialLogo to='/'>
             <SocialIcon />
-            ULTRA
+            SECURESIGN
           </SocialLogo>
-          <WebsiteRights>ULTRA © {date.getFullYear()} </WebsiteRights>
+          <WebsiteRights>SecureSign © {date.getFullYear()} </WebsiteRights>
           <SocialIcons>
             <SocialIconLink href='/' target='_blank' aria-label='Facebook'>
               <FaFacebook />
