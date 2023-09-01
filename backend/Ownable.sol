@@ -1,143 +1,75 @@
-pragma solidity ^0.8.19;
+pragma solidity ^0.5.17;
 
-import "./Ownable.sol";
+/**
+ * @dev Contract module which provides a basic access control mechanism, where
+ * there is an account (an owner) that can be granted exclusive access to
+ * specific functions.
+ *
+ * This module is used through inheritance. It will make available the modifier
+ * `onlyOwner`, which can be aplied to your functions to restrict their use to
+ * the owner.
+ */
+contract Ownable {
+    address private _owner;
 
-contract SecureSign is Ownable {
-    enum currentState {
-        pending,
-        signed,
-        notarized,
-        canceled
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+    /**
+     * @dev Initializes the contract setting the deployer as the initial owner.
+     */
+    constructor () internal {
+        _owner = msg.sender;
+        emit OwnershipTransferred(address(0), _owner);
     }
 
-    struct Doc {
-        uint256 createdTime;
-        uint256 remainingSignatures;
-        uint256 completedTime;
-        bytes32 completedHash;
-        currentState status;
-        mapping(address => uint256) signers;
+    /**
+     * @dev Returns the address of the current owner.
+     */
+    function owner() public view returns (address) {
+        return _owner;
     }
 
-    mapping(bytes32 => Doc) documents;
-    mapping(bytes32 => bytes32) finalDocs;
-
-    event Created(bytes32 hash);
-    event Signature(bytes32 hash, bytes32 signatureHash, address signer);
-    event Signed(bytes32 hash);
-    event Notarized(bytes32 hash, bytes32 signatureHash, address signer);
-    event Completed(bytes32 hash, bytes32 finalHash);
-
-    function createDoc(
-        bytes32 hash,
-        address[] memory signers,
-        bool notarize
-    ) public onlyOwner {
-        require(!checkDoc(hash));
-        if (signers.length == 0 && !notarize) {
-            documents[hash] = Doc(now, 0, now, hash, currentState.signed);
-            finalDocs[hash] = hash;
-        } else {
-            documents[hash] = Doc(
-                now,
-                signers.length,
-                0,
-                "",
-                currentState.pending
-            );
-            for (uint8 i = 0; i < signers.length; i++) {
-                documents[hash].signers[signers[i]] = 1;
-            }
-        }
-        emit Created(hash);
+    /**
+     * @dev Throws if called by any account other than the owner.
+     */
+    modifier onlyOwner() {
+        require(isOwner(), "Ownable: caller is not the owner");
+        _;
     }
 
-    function finalizeDoc(
-        bytes32 originalHash,
-        bytes32 finalHash
-    ) public onlyOwner {
-        require(
-            documents[originalHash].status == currentState.notarized ||
-                documents[originalHash].status == currentState.signed ||
-                documents[originalHash].status == currentState.pending
-        );
-        require(documents[originalHash].completedHash[0] == 0);
-        documents[originalHash].completedHash = finalHash;
-        finalDocs[finalHash] = originalHash;
-        emit Completed(originalHash, finalHash);
-        documents[originalHash].completedTime = now;
+    /**
+     * @dev Returns true if the caller is the current owner.
+     */
+    function isOwner() public view returns (bool) {
+        return msg.sender == _owner;
     }
 
-    function sign(
-        bytes32 hash,
-        bytes32 signatureHash,
-        address signer,
-        bool notarized
-    ) public onlyOwner {
-        require(checkDoc(hash));
-        if (notarized) {
-            documents[hash].status = currentState.notarized;
-            documents[hash].signers[signer] = now;
-            emit Signature(hash, signatureHash, signer);
-            emit Notarized(hash, signatureHash, signer);
-        } else {
-            require(documents[hash].signers[signer] == 1);
-            documents[hash].remainingSignatures--;
-            documents[hash].signers[signer] = now;
-            emit Signature(hash, signatureHash, signer);
-            if (documents[hash].remainingSignatures == 0) {
-                documents[hash].status = currentState.signed;
-                emit Signed(hash);
-            }
-        }
+    /**
+     * @dev Leaves the contract without owner. It will not be possible to call
+     * `onlyOwner` functions anymore. Can only be called by the current owner.
+     *
+     * > Note: Renouncing ownership will leave the contract without an owner,
+     * thereby removing any functionality that is only available to the owner.
+     */
+    function renounceOwnership() public onlyOwner {
+        emit OwnershipTransferred(_owner, address(0));
+        _owner = address(0);
     }
 
-    function getFinalDoc(
-        bytes32 hash
-    ) public view returns (bytes32 originalHash) {
-        require(checkDoc(finalDocs[hash]));
-        originalHash = finalDocs[hash];
+    /**
+     * @dev Transfers ownership of the contract to a new account (`newOwner`).
+     * Can only be called by the current owner.
+     */
+    function transferOwnership(address newOwner) public onlyOwner {
+        _transferOwnership(newOwner);
     }
 
-    function getDocument(
-        bytes32 hash
-    )
-        public
-        view
-        returns (
-            uint256 createdTime,
-            uint256 remainingSignatures,
-            uint256 completedTime,
-            bytes32 completedHash,
-            string memory status
-        )
-    {
-        require(checkDoc(hash));
-        createdTime = documents[hash].createdTime;
-        if (documents[hash].status == currentState.pending) {
-            status = "pending";
-        } else if (documents[hash].status == currentState.signed) {
-            status = "signed";
-        } else if (documents[hash].status == currentState.notarized) {
-            status = "notarized";
-        } else if (documents[hash].status == currentState.canceled) {
-            status = "canceled";
-        }
-        remainingSignatures = documents[hash].remainingSignatures;
-        completedTime = documents[hash].completedTime;
-        completedHash = documents[hash].completedHash;
-    }
-
-    function getSignerTime(
-        bytes32 hash,
-        address signer
-    ) public view returns (uint256) {
-        require(checkDoc(hash));
-        require(documents[hash].signers[signer] > 1);
-        return documents[hash].signers[signer];
-    }
-
-    function checkDoc(bytes32 hash) internal view returns (bool) {
-        return documents[hash].createdTime > 0;
+    /**
+     * @dev Transfers ownership of the contract to a new account (`newOwner`).
+     */
+    function _transferOwnership(address newOwner) internal {
+        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        emit OwnershipTransferred(_owner, newOwner);
+        _owner = newOwner;
     }
 }
