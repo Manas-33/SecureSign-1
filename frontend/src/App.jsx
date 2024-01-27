@@ -13,6 +13,8 @@ import './charts/ChartjsConfig';
 import Dashboard from './pages/Dashboard';
 import Home from './pages/Home';
 import Admin from './pages/Admin';
+import Form from './components/Form/Form';
+import Register from './components/Form/Form';
 
 function App() {
 
@@ -30,6 +32,7 @@ function App() {
         <Route exact path="/" element={<Home/>} />
         <Route exact path="/dashboard" element={<Dashboard />} />
         <Route exact path="/admin" element={<Admin />}/>
+        <Route exact path="/form" element={<Register />}/>
       </Routes>
     </>
   );
