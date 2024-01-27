@@ -1,4 +1,4 @@
-pragma solidity ^0.5.17;
+pragma solidity ^0.8.19;
 
 import "./Ownable.sol";
 
@@ -52,21 +52,6 @@ contract SecureSign is Ownable {
         emit Created(hash);
     }
 
-    function finalizeDoc(
-        bytes32 originalHash,
-        bytes32 finalHash
-    ) public onlyOwner {
-        require(
-            documents[originalHash].status == currentState.notarized ||
-                documents[originalHash].status == currentState.signed ||
-                documents[originalHash].status == currentState.pending
-        );
-        require(documents[originalHash].completedHash[0] == 0);
-        documents[originalHash].completedHash = finalHash;
-        finalDocs[finalHash] = originalHash;
-        emit Completed(originalHash, finalHash);
-        documents[originalHash].completedTime = now;
-    }
 
     function sign(
         bytes32 hash,
